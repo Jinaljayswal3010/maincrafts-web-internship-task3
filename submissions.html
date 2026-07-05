@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submissions Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container" style="max-width: 600px;">
+    <h2>Dashboard Submissions</h2>
+    <div id="submissionsContainer" style="margin-top: 1.5rem;"></div>
+    
+    <button id="clearBtn" style="background: #3b82f6; margin-top: 1rem;">Clear All Records</button>
+    <a href="contact.html" class="nav-link">← Back to Contact Form</a>
+  </div>
+
+  <script>
+    const container = document.getElementById("submissionsContainer");
+    const submissions = JSON.parse(localStorage.getItem("contacts")) || [];
+
+    if (submissions.length === 0) {
+      container.innerHTML = `<p style="color: var(--text-muted); text-align: center;">No responses recorded yet.</p>`;
+    } else {
+      // Loop backwards so newest entries show at the top
+      submissions.reverse().forEach(s => {
+        const card = document.createElement("div");
+        card.className = "submission-card";
+        
+        card.innerHTML = `
+          <strong style="color: var(--primary);">${escapeHTML(s.name)}</strong> 
+          <span style="font-size: 0.8rem; color: var(--text-muted); float: right;">${s.timestamp || ''}</span>
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0;">${escapeHTML(s.email)}</div>
+          <p style="margin: 8px 0 0 0; font-size: 0.95rem; line-height: 1.4;">${escapeHTML(s.message)}</p>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Clear data capability (Highly practical bonus feature)
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      if(confirm("Are you sure you want to delete all entries?")) {
+        localStorage.removeItem("contacts");
+        window.location.reload();
+      }
+    });
+
+    // Helper function to escape text and keep the site secure from code injection
+    function escapeHTML(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+  </script>
+</body>
+</html>
